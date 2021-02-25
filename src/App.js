@@ -1,4 +1,7 @@
 import React,{ useState, useEffect} from 'react';
+import {isEmpty} from 'lodash'
+import shortid from 'shortid'
+
 
 function App() {
   const [pet, setPet] = useState({
@@ -13,10 +16,50 @@ function App() {
   })
 
   const [pets, setPets] = useState([])
-  const [id, setId] = useState("")
-  const [error, setError] = useState(null)
+  //const [id, setId] = useState("")
+  //const [error, setError] = useState(null)
 
-  
+  const handleInputChangePet = (e) => {
+    console.log("ok")
+    setPet({
+      ...pet, 
+      [e.target.name] : e.target.value,
+    })    
+  }
+
+  const addPet = (e) => {
+    e.preventDefault()
+    //for
+    if(isEmpty(pet.namePet)){
+      console.log("Pet Vacio")
+      return
+    }
+    
+    const newPet = {
+      id: shortid.generate(),
+      namePet : pet.namePet,
+      typePet: pet.typePet,
+      racePet: pet.racePet,
+      date: pet.date,
+      nameOwner: pet.nameOwner,
+      phone: pet.phone,
+      adress: pet.adress,
+      mail: pet.mail
+    }
+    setPets([...pets, newPet])
+    setPet({
+      namePet : "",
+      typePet: "",
+      racePet: "",
+      date: "",
+      nameOwner: "",
+      phone: "",
+      adress: "",
+      mail: ""
+    })
+  }
+
+
 
 
   return (
@@ -25,7 +68,7 @@ function App() {
       <br/>
       <div className="row">
         <div className="col-12">
-        <button className="btn btn-success btn-md float-right"><i class="bi bi-plus-square-fill"></i> Crear</button>
+        <button className="btn btn-success btn-md float-right"><i className="bi bi-plus-square-fill"></i> Crear</button>
           <table className="table table-hover mt-5">
             <thead>
               <tr>
@@ -41,57 +84,62 @@ function App() {
               </tr>
             </thead>
             <tbody>
-              <tr className="" key="{pet.id}">
-                <td>"pet.name"</td>
-                <td>"pet.type"</td>
-                <td>"pet.raza"</td>
-                <td>"pet.date"</td>
-                <td>"pet.owner"</td>
-                <td>"pet.phone"</td>
-                <td>"pet.adress"</td>
-                <td>"pet.emal"</td>
-                <td>
-                    <button className="btn btn-outline-info btn-sm float-right"><i className="bi bi-pencil-square"></i></button>
-                    <button className="btn btn-outline-danger btn-sm float-right"><i class="bi bi-trash"></i></button>
-                </td>
-              </tr>
+              {
+                pets.map((pet) => (
+                  <tr className="" key={pet.id}>
+                    <td>{pet.namePet}</td>
+                    <td>{pet.typePet}</td>
+                    <td>{pet.racePet}</td>
+                    <td>{pet.date}</td>
+                    <td>{pet.nameOwner}</td>
+                    <td>{pet.phone}</td>
+                    <td>{pet.adress}</td>
+                    <td>{pet.mail}</td>
+                    <td>
+                        <button className="btn btn-outline-info btn-sm float-right"><i className="bi bi-pencil-square"></i></button>
+                        <button className="btn btn-outline-danger btn-sm float-right"><i className="bi bi-trash"></i></button>
+                    </td>
+                </tr>
+                ))
+              }
             </tbody>
           </table>
         </div>
       </div>
         <hr/>
         <div className="container">
-          <form onSubmit="">
+          <form onSubmit={addPet}>
             <div className="form-group">
               <h2>Información de la Mascota</h2>
-              <label className="mt-5" for="name">Nombre</label>
-              <input type="text" className="form-control" onChange="" value="" placeholder="Ingrese nombre de la mascota"></input>
+              <label className="mt-5">Nombre</label>
+              <input type="text" className="form-control"  name="namePet" onChange={handleInputChangePet} value={pet.namePet} placeholder="Ingrese nombre de la mascota"></input>
               <br/>
-              <label for="type">Tipo</label>
-              <input type="text" className="form-control" onChange="" value="" placeholder="Perro, gato, loro, etc..."></input>
+              <label>Tipo</label>
+              <input type="text" className="form-control"  name="typePet" onChange={handleInputChangePet} value={pet.typePet} placeholder="Perro, gato, loro, etc..."></input>
               <br/>
-              <label for="race">Raza</label>
-              <input type="text" className="form-control" onChange="" value="" placeholder="Dálmata, pitbull, samoyedo, etc..."></input>
+              <label>Raza</label>
+              <input type="text" className="form-control"  name="racePet" onChange={handleInputChangePet} value={pet.racePet} placeholder="Dálmata, pitbull, samoyedo, etc..."></input>
               <br/>
-              <label for="date">Fecha de Nacimiento</label>
-              <input type="text" className="form-control" onChange="" value="" placeholder="23/03/2020"></input>
+              <label>Fecha de Nacimiento</label>
+              <input type="text" className="form-control"  name="date" onChange={handleInputChangePet} value={pet.date} placeholder="23/03/2020"></input>
             </div>
             <div className="form-group">
               <h2 className="mt-5">Información del Propietario</h2>
-              <label className="mt-5" for="name">Nombre y apellidos</label>
-              <input type="text" className="form-control" onChange="" value="" placeholder="Ingrese nombre del propietario"></input>
+              <label className="mt-5">Nombre y apellidos</label>
+              <input type="text" className="form-control"  name="nameOwner" onChange={handleInputChangePet} value={pet.nameOwner} placeholder="Ingrese nombre del propietario"></input>
               <br/>
-              <label for="phone">Telefono</label>
-              <input type="number" className="form-control" onChange="" value="" placeholder="312234234"></input>
+              <label>Telefono</label>
+              <input type="number" className="form-control"  name="phone" onChange={handleInputChangePet} value={pet.phone} placeholder="312234234"></input>
               <br/>
-              <label for="adress">Dirección</label>
-              <input type="text" className="form-control" onChange="" value="" placeholder="Ingrese dirección recidencia"></input>
+              <label>Dirección</label>
+              <input type="text" className="form-control" name="adress" onChange={handleInputChangePet} value={pet.adress} placeholder="Ingrese dirección recidencia"></input>
               <br/>
-              <label for="email">Email</label>
-              <input type="email" className="form-control" onChange="" value="" placeholder="ejemplo@veterianairia.com"></input>
+              <label>Email</label>
+              {/* email */}
+              <input type="text" className="form-control"  name="mail" onChange={handleInputChangePet} value={pet.mail} placeholder="ejemplo@veterianairia.com"></input>
               <br/>
             </div>
-              <button className="btn btn-success btn-md btn-block"> <i class="bi bi-check-circle"></i> Guardar</button>
+              <button type="submit" className="btn btn-success btn-md btn-block"> <i className="bi bi-check-circle"></i> Guardar</button>
               <br/>         
           </form>
         </div>

@@ -33,8 +33,8 @@ function App() {
   const validForm = () => {
     let isValid = true
     setError(null)
-
-    if(isEmpty(pet.namePet)){
+    setModal(true)
+    if(isEmpty(pet.namePet) || isEmpty(pet.typePet) || isEmpty(pet.racePet) || isEmpty(pet.date) || isEmpty(pet.nameOwner) || isEmpty(pet.phone) || isEmpty(pet.adress) || isEmpty(pet.mail)){
       setError("Debes ingresar información")
       isValid = false 
     }
@@ -310,7 +310,7 @@ function App() {
         </ModalBody>
         <ModalFooter>
               {error && <span className="text-danger">{error}</span>}
-              <button type="submit" onClick={toggle} className="btn btn-success btn-md"> <i className="bi bi-check-circle"></i> {editMode ? "Guardar" : "Agregar"}</button>
+              <button type="submit" className="btn btn-success btn-md"> <i className="bi bi-check-circle"></i> {editMode ? "Guardar" : "Agregar"}</button>
               <Button color="secondary" onClick={toggle}>Cancel</Button>
         </ModalFooter>
         </form>

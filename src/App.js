@@ -1,5 +1,6 @@
 import React,{ useState, useEffect} from 'react';
 import {isEmpty, size} from 'lodash'
+import { Button, Modal, ModalBody, ModalHeader, ModalFooter} from 'reactstrap';
 import { addDocument , deleteDocument, getCollection, updateDocument } from './actions';
 
 
@@ -41,7 +42,6 @@ function App() {
   }
 
   const handleInputChangePet = (e) => {
-    console.log("ok")
     setPet({
       ...pet, 
       [e.target.name] : e.target.value,
@@ -69,7 +69,7 @@ function App() {
       setError(result.error)
       return
     }
-    
+    setModal(false)
     setPets([...pets, {id : result.data.id, 
                         namePet : pet.namePet,
                         typePet: pet.typePet,
@@ -102,6 +102,7 @@ function App() {
   }
 
   const editPet = (thePet) => {
+    setModal(true)
     setPet(thePet)
     setEditMode(true)
     setId(thePet.id)
@@ -141,6 +142,7 @@ function App() {
       mail: pet.mail } : item)
     setPets(editedPets)
     setEditMode(false)
+    setModal(false)
     setId("")
     setPet({
       namePet : "",
@@ -154,9 +156,16 @@ function App() {
     })
   }
 
+  //Modal
 
+  const [modal, setModal] = useState(false)
 
+  const openModal=()=>{
+    setModal(true)
+    setEditMode(false)
+  }
 
+  const toggle = () => setModal(!modal);
 
 
   return (
@@ -165,7 +174,7 @@ function App() {
       <br/>
       <div className="row">
         <div className="col-12">
-        <button className="btn btn-success btn-md float-right"><i className="bi bi-plus-square-fill"></i> Crear</button>
+        <button className="btn btn-success btn-md float-right" onClick={()=>openModal()} ><i className="bi bi-plus-square-fill"></i> Crear</button>
           <table className="table table-hover mt-5">
             <thead>
               <tr>
@@ -177,6 +186,7 @@ function App() {
                 <th className="col">Telefono</th>
                 <th className="col">Dirección</th>
                 <th className="col">Email</th>
+                <th className="col"></th>
                 <th className="col"></th>
               </tr>
             </thead>
@@ -207,6 +217,8 @@ function App() {
                             >
                             <i className="bi bi-pencil-square"></i>
                           </button>
+                      </td>
+                      <td>
                           <button 
                             className="btn btn-outline-danger btn-sm float-right"
                             onClick={() => deletePet(pet.id)}>
@@ -223,7 +235,7 @@ function App() {
         </div>
       </div>
         <hr/>
-        <div className="container">
+ {/*        <div className="container">
           <form onSubmit={editMode ? savePet : addPet}>
             <div className="form-group">
               <h1>{editMode ? "Editar mascota" : "Agregar mascota"}</h1>
@@ -252,7 +264,6 @@ function App() {
               <input type="text" className="form-control" name="adress" onChange={handleInputChangePet} value={pet.adress} placeholder="Ingrese dirección recidencia"></input>
               <br/>
               <label>Email</label>
-              {/* email */}
               <input type="text" className="form-control"  name="mail" onChange={handleInputChangePet} value={pet.mail} placeholder="ejemplo@veterianairia.com"></input>
               <br/>
             </div>
@@ -260,8 +271,53 @@ function App() {
               <button type="submit" className="btn btn-success btn-md btn-block"> <i className="bi bi-check-circle"></i> {editMode ? "Guardar" : "Agregar"}</button>
               <br/>         
           </form>
+        </div> */}
+        <div>
+        <Modal isOpen={modal} toggle={toggle}>
+        <form onSubmit={editMode ? savePet : addPet}>
+        <ModalHeader toggle={toggle}>{editMode ? "Editar" : "Agregar"}</ModalHeader>
+        <ModalBody>
+            <div className="form-group">
+              <h5 className="text-center">Mascota</h5>
+              <label className="mt-2 ">Nombre</label>
+              <input type="text" className="form-control"  name="namePet" onChange={handleInputChangePet} value={pet.namePet} placeholder="Ingrese nombre de la mascota"></input>
+              <br/>
+              <label>Tipo</label>
+              <input type="text" className="form-control"  name="typePet" onChange={handleInputChangePet} value={pet.typePet} placeholder="Perro, gato, loro, etc..."></input>
+              <br/>
+              <label>Raza</label>
+              <input type="text" className="form-control"  name="racePet" onChange={handleInputChangePet} value={pet.racePet} placeholder="Dálmata, pitbull, samoyedo, etc..."></input>
+              <br/>
+              <label>Fecha de Nacimiento</label>
+              <input type="text" className="form-control"  name="date" onChange={handleInputChangePet} value={pet.date} placeholder="23/03/2020"></input>
+            </div>
+            <hr/>
+            <div className="form-group">
+              <h5 className="mt-3 text-center">Propietario</h5>
+              <label className="mt-2">Nombre y apellidos</label>
+              <input type="text" className="form-control"  name="nameOwner" onChange={handleInputChangePet} value={pet.nameOwner} placeholder="Ingrese nombre del propietario"></input>
+              <br/>
+              <label>Telefono</label>
+              <input type="number" className="form-control"  name="phone" onChange={handleInputChangePet} value={pet.phone} placeholder="312234234"></input>
+              <br/>
+              <label>Dirección</label>
+              <input type="text" className="form-control" name="adress" onChange={handleInputChangePet} value={pet.adress} placeholder="Ingrese dirección recidencia"></input>
+              <br/>
+              <label>Email</label>
+              {/* email */}
+              <input type="text" className="form-control"  name="mail" onChange={handleInputChangePet} value={pet.mail} placeholder="ejemplo@veterianairia.com"></input>
+            </div>             
+        </ModalBody>
+        <ModalFooter>
+              {error && <span className="text-danger">{error}</span>}
+              <button type="submit" onClick={toggle} className="btn btn-success btn-md"> <i className="bi bi-check-circle"></i> {editMode ? "Guardar" : "Agregar"}</button>
+              <Button color="secondary" onClick={toggle}>Cancel</Button>
+        </ModalFooter>
+        </form>
+      </Modal>
         </div>
     </div>
+
   );
 }
 

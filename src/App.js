@@ -1,6 +1,6 @@
 import React,{ useState, useEffect} from 'react';
 import {isEmpty, size} from 'lodash'
-import shortid from 'shortid'
+import { addDocument , deleteDocument, getCollection, updateDocument } from './actions';
 
 
 function App() {
@@ -19,6 +19,15 @@ function App() {
   const [editMode, setEditMode] = useState(false)
   const [id, setId] = useState("")
   const [error, setError] = useState(null)
+
+  useEffect(() => {
+    (async () => {
+      const result = await getCollection("pets")
+      if(result.statusResponse){
+        setPets(result.data)
+      }
+    })()
+  }, [])
 
   const validForm = () => {
     let isValid = true
@@ -39,25 +48,37 @@ function App() {
     })    
   }
 
-  const addPet = (e) => {
+  const addPet = async (e) => {
     e.preventDefault()
 
     if(!validForm()){
       return
     }
-    
-    const newPet = {
-      id: shortid.generate(),
-      namePet : pet.namePet,
-      typePet: pet.typePet,
-      racePet: pet.racePet,
-      date: pet.date,
-      nameOwner: pet.nameOwner,
-      phone: pet.phone,
-      adress: pet.adress,
-      mail: pet.mail
+
+    const result = await addDocument("pets", {
+                                                namePet : pet.namePet,
+                                                typePet: pet.typePet,
+                                                racePet: pet.racePet,
+                                                date: pet.date,
+                                                nameOwner: pet.nameOwner,
+                                                phone: pet.phone,
+                                                adress: pet.adress,
+                                                mail: pet.mail})
+
+    if(!result.statusResponse){
+      setError(result.error)
+      return
     }
-    setPets([...pets, newPet])
+    
+    setPets([...pets, {id : result.data.id, 
+                        namePet : pet.namePet,
+                        typePet: pet.typePet,
+                        racePet: pet.racePet,
+                        date: pet.date,
+                        nameOwner: pet.nameOwner,
+                        phone: pet.phone,
+                        adress: pet.adress,
+                        mail: pet.mail}])
     setPet({
       namePet : "",
       typePet: "",
@@ -70,7 +91,12 @@ function App() {
     })
   }
 
-  const deletePet = (id) => {
+  const deletePet = async (id) => {
+    const result = await deleteDocument("pets", id)
+    if(!result.statusResponse){
+      setError(result.error)
+      return
+    }
     const filterPets = pets.filter(pet => pet.id !== id)
     setPets(filterPets)
   }
@@ -81,12 +107,27 @@ function App() {
     setId(thePet.id)
   }
 
-  const savePet = (e) => {
+  const savePet = async (e) => {
     e.preventDefault()
 
     if(!validForm()){
       return
     }
+
+    const result = await updateDocument("pets", id , {namePet: pet.namePet, 
+                                                      typePet: pet.typePet,
+                                                      racePet: pet.racePet,
+                                                      date: pet.date,
+                                                      nameOwner: pet.nameOwner,
+                                                      phone: pet.phone,
+                                                      adress: pet.adress,
+                                                      mail: pet.mail})
+
+    if(!result.statusResponse){
+      setError(result.error)
+      return
+    }
+
 
     const editedPets = pets.map(item => item.id === id ?{
       id: pet.id, 

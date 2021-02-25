@@ -2,6 +2,7 @@ import React,{ useState, useEffect} from 'react';
 import {isEmpty, size} from 'lodash'
 import { Button, Modal, ModalBody, ModalHeader, ModalFooter} from 'reactstrap';
 import { addDocument , deleteDocument, getCollection, updateDocument } from './actions';
+import swal from 'sweetalert';
 
 
 function App() {
@@ -89,6 +90,7 @@ function App() {
       adress: "",
       mail: ""
     })
+    successful()
   }
 
   const deletePet = async (id) => {
@@ -154,6 +156,7 @@ function App() {
       adress: "",
       mail: ""
     })
+    successful()
   }
 
   //Modal
@@ -166,6 +169,10 @@ function App() {
   }
 
   const toggle = () => setModal(!modal);
+
+  const successful = () => {
+    swal("¡Exitoso!", "Click en el botón para continuar!", "success")
+  }
 
 
   return (
@@ -234,44 +241,6 @@ function App() {
           </table>
         </div>
       </div>
-        <hr/>
- {/*        <div className="container">
-          <form onSubmit={editMode ? savePet : addPet}>
-            <div className="form-group">
-              <h1>{editMode ? "Editar mascota" : "Agregar mascota"}</h1>
-              <h2>Información de la Mascota</h2>
-              <label className="mt-5">Nombre</label>
-              <input type="text" className="form-control"  name="namePet" onChange={handleInputChangePet} value={pet.namePet} placeholder="Ingrese nombre de la mascota"></input>
-              <br/>
-              <label>Tipo</label>
-              <input type="text" className="form-control"  name="typePet" onChange={handleInputChangePet} value={pet.typePet} placeholder="Perro, gato, loro, etc..."></input>
-              <br/>
-              <label>Raza</label>
-              <input type="text" className="form-control"  name="racePet" onChange={handleInputChangePet} value={pet.racePet} placeholder="Dálmata, pitbull, samoyedo, etc..."></input>
-              <br/>
-              <label>Fecha de Nacimiento</label>
-              <input type="text" className="form-control"  name="date" onChange={handleInputChangePet} value={pet.date} placeholder="23/03/2020"></input>
-            </div>
-            <div className="form-group">
-              <h2 className="mt-5">Información del Propietario</h2>
-              <label className="mt-5">Nombre y apellidos</label>
-              <input type="text" className="form-control"  name="nameOwner" onChange={handleInputChangePet} value={pet.nameOwner} placeholder="Ingrese nombre del propietario"></input>
-              <br/>
-              <label>Telefono</label>
-              <input type="number" className="form-control"  name="phone" onChange={handleInputChangePet} value={pet.phone} placeholder="312234234"></input>
-              <br/>
-              <label>Dirección</label>
-              <input type="text" className="form-control" name="adress" onChange={handleInputChangePet} value={pet.adress} placeholder="Ingrese dirección recidencia"></input>
-              <br/>
-              <label>Email</label>
-              <input type="text" className="form-control"  name="mail" onChange={handleInputChangePet} value={pet.mail} placeholder="ejemplo@veterianairia.com"></input>
-              <br/>
-            </div>
-              {error && <span className="text-danger">{error}</span>}
-              <button type="submit" className="btn btn-success btn-md btn-block"> <i className="bi bi-check-circle"></i> {editMode ? "Guardar" : "Agregar"}</button>
-              <br/>         
-          </form>
-        </div> */}
         <div>
         <Modal isOpen={modal} toggle={toggle}>
         <form onSubmit={editMode ? savePet : addPet}>

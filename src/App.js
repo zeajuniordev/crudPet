@@ -1,5 +1,5 @@
 import React,{ useState, useEffect} from 'react';
-import {isEmpty} from 'lodash'
+import {isEmpty, size} from 'lodash'
 import shortid from 'shortid'
 
 
@@ -16,8 +16,20 @@ function App() {
   })
 
   const [pets, setPets] = useState([])
-  //const [id, setId] = useState("")
-  //const [error, setError] = useState(null)
+  const [editMode, setEditMode] = useState(false)
+  const [id, setId] = useState("")
+  const [error, setError] = useState(null)
+
+  const validForm = () => {
+    let isValid = true
+    setError(null)
+
+    if(isEmpty(pet.namePet)){
+      setError("Debes ingresar información")
+      isValid = false 
+    }
+    return isValid
+  }
 
   const handleInputChangePet = (e) => {
     console.log("ok")
@@ -29,9 +41,8 @@ function App() {
 
   const addPet = (e) => {
     e.preventDefault()
-    //for
-    if(isEmpty(pet.namePet)){
-      console.log("Pet Vacio")
+
+    if(!validForm()){
       return
     }
     
@@ -59,6 +70,51 @@ function App() {
     })
   }
 
+  const deletePet = (id) => {
+    const filterPets = pets.filter(pet => pet.id !== id)
+    setPets(filterPets)
+  }
+
+  const editPet = (thePet) => {
+    setPet(thePet)
+    setEditMode(true)
+    setId(thePet.id)
+  }
+
+  const savePet = (e) => {
+    e.preventDefault()
+
+    if(!validForm()){
+      return
+    }
+
+    const editedPets = pets.map(item => item.id === id ?{
+      id: pet.id, 
+      namePet: pet.namePet, 
+      typePet: pet.typePet,
+      racePet: pet.racePet,
+      date: pet.date,
+      nameOwner: pet.nameOwner,
+      phone: pet.phone,
+      adress: pet.adress,
+      mail: pet.mail } : item)
+    setPets(editedPets)
+    setEditMode(false)
+    setId("")
+    setPet({
+      namePet : "",
+      typePet: "",
+      racePet: "",
+      date: "",
+      nameOwner: "",
+      phone: "",
+      adress: "",
+      mail: ""
+    })
+  }
+
+
+
 
 
 
@@ -83,33 +139,53 @@ function App() {
                 <th className="col"></th>
               </tr>
             </thead>
-            <tbody>
-              {
-                pets.map((pet) => (
-                  <tr className="" key={pet.id}>
-                    <td>{pet.namePet}</td>
-                    <td>{pet.typePet}</td>
-                    <td>{pet.racePet}</td>
-                    <td>{pet.date}</td>
-                    <td>{pet.nameOwner}</td>
-                    <td>{pet.phone}</td>
-                    <td>{pet.adress}</td>
-                    <td>{pet.mail}</td>
-                    <td>
-                        <button className="btn btn-outline-info btn-sm float-right"><i className="bi bi-pencil-square"></i></button>
-                        <button className="btn btn-outline-danger btn-sm float-right"><i className="bi bi-trash"></i></button>
-                    </td>
-                </tr>
-                ))
-              }
-            </tbody>
+            {
+              size(pets) === 0 ? (
+                <tbody>
+                  <tr>
+                    <td colSpan="8"><h5 className="text-center">No hay mascotas agregadas</h5></td>
+                  </tr>
+                </tbody>
+              ):(
+              <tbody>
+                {
+                  pets.map((pet) => (
+                    <tr className="" key={pet.id}>
+                      <td>{pet.namePet}</td>
+                      <td>{pet.typePet}</td>
+                      <td>{pet.racePet}</td>
+                      <td>{pet.date}</td>
+                      <td>{pet.nameOwner}</td>
+                      <td>{pet.phone}</td>
+                      <td>{pet.adress}</td>
+                      <td>{pet.mail}</td>
+                      <td>
+                          <button 
+                            className="btn btn-outline-info btn-sm float-right"
+                            onClick={() => editPet(pet)}
+                            >
+                            <i className="bi bi-pencil-square"></i>
+                          </button>
+                          <button 
+                            className="btn btn-outline-danger btn-sm float-right"
+                            onClick={() => deletePet(pet.id)}>
+                            <i className="bi bi-trash"></i>
+                          </button>
+                      </td>
+                  </tr>
+                  ))
+                }
+              </tbody>
+              )
+            }
           </table>
         </div>
       </div>
         <hr/>
         <div className="container">
-          <form onSubmit={addPet}>
+          <form onSubmit={editMode ? savePet : addPet}>
             <div className="form-group">
+              <h1>{editMode ? "Editar mascota" : "Agregar mascota"}</h1>
               <h2>Información de la Mascota</h2>
               <label className="mt-5">Nombre</label>
               <input type="text" className="form-control"  name="namePet" onChange={handleInputChangePet} value={pet.namePet} placeholder="Ingrese nombre de la mascota"></input>
@@ -139,7 +215,8 @@ function App() {
               <input type="text" className="form-control"  name="mail" onChange={handleInputChangePet} value={pet.mail} placeholder="ejemplo@veterianairia.com"></input>
               <br/>
             </div>
-              <button type="submit" className="btn btn-success btn-md btn-block"> <i className="bi bi-check-circle"></i> Guardar</button>
+              {error && <span className="text-danger">{error}</span>}
+              <button type="submit" className="btn btn-success btn-md btn-block"> <i className="bi bi-check-circle"></i> {editMode ? "Guardar" : "Agregar"}</button>
               <br/>         
           </form>
         </div>

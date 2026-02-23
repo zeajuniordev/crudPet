@@ -4,7 +4,7 @@ import { logoutUser } from '../actions'
 import swal from 'sweetalert'
 
 const Header = () => {
-    const { currentUser, userRole, isAdmin } = useAuth()
+    const { currentUser, isAdmin } = useAuth()
 
     const handleLogout = async () => {
         const confirmed = await swal({

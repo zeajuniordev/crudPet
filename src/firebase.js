@@ -1,5 +1,6 @@
 import firebase from 'firebase/app'
 import 'firebase/firestore'
+import 'firebase/auth'
 
 const firebaseConfig = {
     apiKey: "AIzaSyCcivl0gl1H-pYGzkaBHZjdMOlduRckn0k",
@@ -11,3 +12,9 @@ const firebaseConfig = {
   }
 
 export const firebaseApp = firebase.initializeApp(firebaseConfig)
+
+// Firebase Auth instance — passwords are hashed server-side with bcrypt by Firebase
+export const auth = firebase.auth(firebaseApp)
+
+// Firestore database instance
+export const db = firebase.firestore(firebaseApp)

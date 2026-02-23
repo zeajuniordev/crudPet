@@ -1,9 +1,34 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /{document=**} {
-      allow read, write: if
-          request.time < timestamp.date(2021, 3, 27);
+
+    // ── Colección "pets" ─────────────────────────────────────────────────────
+    // Lectura: cualquier usuario autenticado (admin y cliente)
+    // Escritura: solo usuarios con rol "admin"
+    match /pets/{petId} {
+      allow read: if request.auth != null;
+
+      allow create, update, delete: if request.auth != null
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // ── Colección "users" ────────────────────────────────────────────────────
+    // Lectura: cada usuario puede leer su propio perfil
+    // Creación: el propio usuario al registrarse
+    // Actualización de rol: solo un administrador puede cambiar el campo "role"
+    match /users/{userId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+
+      allow create: if request.auth != null && request.auth.uid == userId
+        && request.resource.data.role == 'client';
+
+      allow update: if request.auth != null && (
+        // El propio usuario actualiza campos que no son el rol
+        (request.auth.uid == userId && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role']))
+        ||
+        // Un administrador puede cambiar cualquier campo, incluido el rol
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'
+      );
     }
   }
 }
